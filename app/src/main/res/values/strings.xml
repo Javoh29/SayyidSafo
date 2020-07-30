@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SayyidSafo</string>
+    <string name="title_home">Асосий</string>
+    <string name="title_car_mode">Уловда</string>
+    <string name="title_play">Эшитиш</string>
+    <string name="title_chosen">Сақланганлар</string>
+</resources>
