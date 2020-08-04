@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context=".ui.fragment.ListenFragment">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/img_listen"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:src="@drawable/wallpaper1"
+        android:scaleType="centerCrop"/>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/img_back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_back"
+        android:paddingVertical="25dp"
+        android:paddingHorizontal="15dp"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_lesson_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/img_back"
+        android:layout_marginHorizontal="10dp"
+        android:textSize="22sp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"/>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_lesson_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_lesson_title"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="70dp"
+        android:layout_marginStart="10dp"
+        android:textSize="14sp"
+        android:textColor="@android:color/white" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/edit_search"
+        android:layout_width="200dp"
+        android:layout_height="30dp"
+        android:background="@drawable/circle_edit_text"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginVertical="23dp"
+        android:hint="@string/text_search"
+        android:textColorHint="@android:color/darker_gray"
+        android:textSize="12sp"
+        android:drawableStart="@drawable/ic_search"
+        android:drawablePadding="10sp"
+        android:paddingHorizontal="10sp"/>
+
+    <uz.mnsh.sayyidsafo.utils.FrameLayoutHardware
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/img_listen"
+        android:layout_marginTop="-20dp">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_lesson_sum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:textSize="18sp"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
+            android:padding="15dp"
+            android:text="@string/text_lesson_sum"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_lessons"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="50dp"
+            android:background="@android:color/white"
+            android:visibility="invisible"/>
+
+        <com.github.ybq.android.spinkit.SpinKitView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/spin_kit"
+            android:layout_gravity="center"
+            app:SpinKit_Color="@color/colorPrimary"
+            style="@style/SpinKitView.Large.Circle"/>
+
+    </uz.mnsh.sayyidsafo.utils.FrameLayoutHardware>
+
+</RelativeLayout>

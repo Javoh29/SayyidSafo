@@ -9,24 +9,43 @@
         android:id="@+id/homeFragment"
         android:name="uz.mnsh.sayyidsafo.ui.fragment.HomeFragment"
         android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home">
+
+        <action
+            android:id="@+id/action_homeFragment_to_listenFragment"
+            app:destination="@id/listenFragment" />
+
+    </fragment>
 
     <fragment
         android:id="@+id/carModeFragment"
-        android:name="uz.mnsh.sayyidsafo.ui.fragment.DashboardFragment"
+        android:name="uz.mnsh.sayyidsafo.ui.fragment.CarModeFragment"
         android:label="@string/title_car_mode"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_car_mode" />
 
     <fragment
         android:id="@+id/listenFragment"
-        android:name="uz.mnsh.sayyidsafo.ui.fragment.NotificationsFragment"
+        android:name="uz.mnsh.sayyidsafo.ui.fragment.ListenFragment"
         android:label="@string/title_play"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_listen">
+
+        <argument
+            android:name="index"
+            android:defaultValue="1"
+            app:argType="integer" />
+
+        <argument
+            android:name="sum"
+            android:defaultValue="80"
+            app:argType="integer" />
+
+    </fragment>
 
     <fragment
         android:id="@+id/chosenFragment"
-        android:name="uz.mnsh.sayyidsafo.ui.fragment.NotificationsFragment"
+        android:name="uz.mnsh.sayyidsafo.ui.fragment.ChosenFragment"
         android:label="@string/title_chosen"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_chosen" />
+
 
 </navigation>
