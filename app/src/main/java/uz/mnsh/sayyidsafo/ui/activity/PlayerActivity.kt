@@ -1,4 +1,3 @@
-
 package uz.mnsh.sayyidsafo.ui.activity
 
 import android.annotation.SuppressLint
@@ -104,10 +103,10 @@ class PlayerActivity : AppCompatActivity() {
 
         if (intent.getParcelableArrayListExtra<UnitAudioModel>("all") != null) {
             val list = intent.getParcelableArrayListExtra<UnitAudioModel>("all") ?: ArrayList()
-            File(App.DIR_PATH ).walkTopDown().forEach { file ->
+            File(App.DIR_PATH).walkTopDown().forEach { file ->
                 if (file.name.endsWith(".mp3")) {
                     list.forEach {
-                        if (it.getFileName() == file.name){
+                        if (it.getFileName() == file.name) {
                             val sm = SongModel(
                                 name = it.name,
                                 songPath = file.path

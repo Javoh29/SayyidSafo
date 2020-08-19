@@ -18,12 +18,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/carModeFragment"
-        android:name="uz.mnsh.sayyidsafo.ui.fragment.CarModeFragment"
-        android:label="@string/title_car_mode"
-        tools:layout="@layout/fragment_car_mode" />
-
-    <fragment
         android:id="@+id/listenFragment"
         android:name="uz.mnsh.sayyidsafo.ui.fragment.ListenFragment"
         android:label="@string/title_play"

@@ -5,10 +5,9 @@ import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.fragment_chosen.*
 import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.closestKodein
@@ -28,17 +27,13 @@ class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, Li
     private val viewModelFactory: ChosenViewModelFactory by instance<ChosenViewModelFactory>()
     private lateinit var viewModel: ChosenViewModel
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var editText: AppCompatEditText
     private var listAudiosFile: ArrayList<String> = ArrayList()
     private var adapter: ChosenAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        recyclerView = view.findViewById(R.id.recycler_chosen)
-        recyclerView.layoutManager = LinearLayoutManager(context)
-        editText = view.findViewById(R.id.edit_search)
+        recyclerChosen.layoutManager = LinearLayoutManager(context)
 
         viewModel = viewModelFactory.create(ChosenViewModel::class.java)
         loadData()
@@ -62,11 +57,11 @@ class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, Li
 
     private fun bindUI(list: List<UnitAudioModel>){
         adapter = ChosenAdapter(list, this)
-        recyclerView.adapter = adapter
+        recyclerChosen.adapter = adapter
 
-        editText.addTextChangedListener(object : TextWatcher {
+        editSearch.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                adapter!!.searchAudio(editText.text.toString())
+                adapter!!.searchAudio(editSearch.text.toString())
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {

@@ -11,11 +11,9 @@
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/img_download"
         android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_height="35dp"
         android:src="@drawable/download"
-        android:padding="10dp"
         android:layout_marginEnd="5dp"
-        android:layout_centerVertical="true"
         android:layout_alignParentStart="true"/>
 
     <ProgressBar
@@ -70,10 +68,8 @@
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/img_chosen"
         android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_height="35dp"
         android:src="@drawable/ic_chosen_on"
-        android:padding="10dp"
-        android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"/>
 
 

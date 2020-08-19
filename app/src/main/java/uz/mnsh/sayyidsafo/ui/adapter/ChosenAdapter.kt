@@ -44,7 +44,6 @@ class ChosenAdapter(
         val download: AppCompatImageView = view.findViewById(R.id.img_download)
         val chosen: AppCompatImageView = view.findViewById(R.id.img_chosen)
         val relativeLayout: RelativeLayout = view.findViewById(R.id.relative_item)
-        val mContext: Context = view.context
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChosenViewHolder {
