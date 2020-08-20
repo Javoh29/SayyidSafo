@@ -1,9 +1,8 @@
 package uz.mnsh.sayyidsafo.ui.fragment
 
+import android.media.MediaMetadataRetriever
 import android.os.Bundle
 import android.os.Handler
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +16,7 @@ import uz.mnsh.sayyidsafo.R
 import uz.mnsh.sayyidsafo.data.db.unitchosen.UnitAudioModel
 import uz.mnsh.sayyidsafo.ui.activity.MainActivity
 import uz.mnsh.sayyidsafo.ui.adapter.ChosenAdapter
+import uz.mnsh.sayyidsafo.ui.adapter.SavedAdapter
 import uz.mnsh.sayyidsafo.ui.base.ScopedFragment
 import uz.mnsh.sayyidsafo.utils.ListenActions
 import java.io.File
@@ -26,9 +26,11 @@ class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, Li
     override val kodein by closestKodein()
     private val viewModelFactory: ChosenViewModelFactory by instance<ChosenViewModelFactory>()
     private lateinit var viewModel: ChosenViewModel
+    private var isChange: Boolean = true
 
     private var listAudiosFile: ArrayList<String> = ArrayList()
     private var adapter: ChosenAdapter? = null
+    private val listModel: ArrayList<UnitAudioModel> = ArrayList()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -41,9 +43,12 @@ class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, Li
 
     private fun loadData() = launch {
         listAudiosFile.clear()
+        val metaRetriever = MediaMetadataRetriever()
         File(App.DIR_PATH).walkTopDown().forEach { file ->
             if (file.name.endsWith(".mp3")){
                 listAudiosFile.add(file.name)
+                metaRetriever.setDataSource(file.path)
+                listModel.add(UnitAudioModel(id = 0, name = file.name, duration = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!.toLong(), location = "", size = file.length(), topic_id = "1"))
             }
         }
 
@@ -56,21 +61,26 @@ class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, Li
     }
 
     private fun bindUI(list: List<UnitAudioModel>){
-        adapter = ChosenAdapter(list, this)
-        recyclerChosen.adapter = adapter
+        adapter = ChosenAdapter(ArrayList(list), this)
+        if (isChange) {
+            tvChosen.setBackgroundResource(R.drawable.text_view_border)
+            tvSaved.setBackgroundResource(R.drawable.text_view_bg)
+            recyclerChosen.adapter = adapter
+        }else {
+            tvChosen.setBackgroundResource(R.drawable.text_view_bg)
+            tvSaved.setBackgroundResource(R.drawable.text_view_border)
+            recyclerChosen.adapter = SavedAdapter(listModel, this)
+        }
 
-        editSearch.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-                adapter!!.searchAudio(editSearch.text.toString())
-            }
+        tvChosen.setOnClickListener {
+            isChange = true
+            bindUI(list)
+        }
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-            }
-
-        })
+        tvSaved.setOnClickListener {
+            isChange = false
+            bindUI(list)
+        }
     }
 
     override val listAudios: ArrayList<String>

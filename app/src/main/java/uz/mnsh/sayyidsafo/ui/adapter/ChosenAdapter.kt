@@ -26,13 +26,11 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class ChosenAdapter(
-    listModel: List<UnitAudioModel>,
+    val listModel: ArrayList<UnitAudioModel>,
     private val listenActions: ListenActions
 ) :
     RecyclerView.Adapter<ChosenAdapter.ChosenViewHolder>() {
 
-    var listModel: ArrayList<UnitAudioModel> = ArrayList(listModel)
-    private val listModelReserv: ArrayList<UnitAudioModel> = ArrayList(listModel)
     private var idList: HashMap<Int, Int> = HashMap()
     var isPlaying: Int = -1
 
@@ -77,7 +75,7 @@ class ChosenAdapter(
             if (listenActions.listAudios.contains(listModel[position].getFileName())) {
                 val intent = Intent(it.context, PlayerActivity::class.java)
                 intent.putExtra("model", Gson().toJson(listModel[position]))
-                intent.putParcelableArrayListExtra("all", listModelReserv)
+                intent.putParcelableArrayListExtra("all", listModel)
                 it.context.startActivity(intent)
                 holder.download.setImageResource(R.drawable.stop)
             } else {
@@ -88,7 +86,6 @@ class ChosenAdapter(
         holder.chosen.setOnClickListener {
             listenActions.deleteChosen(listModel[position].id)
             listModel.removeAt(position)
-            listModelReserv.removeAt(position)
             notifyDataSetChanged()
         }
 
@@ -104,7 +101,7 @@ class ChosenAdapter(
                 if (listenActions.listAudios.contains(listModel[position].getFileName())) {
                     val intent = Intent(it.context, PlayerActivity::class.java)
                     intent.putExtra("model", Gson().toJson(listModel[position]))
-                    intent.putParcelableArrayListExtra("all", listModelReserv)
+                    intent.putParcelableArrayListExtra("all", listModel)
                     it.context.startActivity(intent)
                     holder.download.setImageResource(R.drawable.stop)
                     isPlaying = position
@@ -150,19 +147,5 @@ class ChosenAdapter(
     private fun getFormattedTime(seconds: Long): String {
         val minutes = seconds / 60
         return String.format("%d:%02d", minutes, seconds % 60)
-    }
-
-    fun searchAudio(text: String){
-        listModel.clear()
-        if (text.isEmpty()){
-            listModel = ArrayList(listModelReserv)
-        }else{
-            listModelReserv.forEach {it ->
-                if (it.name.toLowerCase(Locale.ROOT).contains(text.toLowerCase(Locale.ROOT))){
-                    listModel.add(it)
-                }
-            }
-        }
-        notifyDataSetChanged()
     }
 }
