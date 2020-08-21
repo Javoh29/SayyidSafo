@@ -1,6 +1,6 @@
 package uz.mnsh.sayyidsafo.ui.fragment
 
-import android.media.MediaMetadataRetriever
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
@@ -13,15 +13,15 @@ import org.kodein.di.android.x.closestKodein
 import org.kodein.di.generic.instance
 import uz.mnsh.sayyidsafo.App
 import uz.mnsh.sayyidsafo.R
+import uz.mnsh.sayyidsafo.data.db.model.ChosenModel
 import uz.mnsh.sayyidsafo.data.db.unitchosen.UnitAudioModel
 import uz.mnsh.sayyidsafo.ui.activity.MainActivity
 import uz.mnsh.sayyidsafo.ui.adapter.ChosenAdapter
 import uz.mnsh.sayyidsafo.ui.adapter.SavedAdapter
 import uz.mnsh.sayyidsafo.ui.base.ScopedFragment
-import uz.mnsh.sayyidsafo.utils.ListenActions
 import java.io.File
 
-class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, ListenActions {
+class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, ChosenAction {
 
     override val kodein by closestKodein()
     private val viewModelFactory: ChosenViewModelFactory by instance<ChosenViewModelFactory>()
@@ -31,6 +31,7 @@ class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, Li
     private var listAudiosFile: ArrayList<String> = ArrayList()
     private var adapter: ChosenAdapter? = null
     private val listModel: ArrayList<UnitAudioModel> = ArrayList()
+    private val listModelChosen: ArrayList<UnitAudioModel> = ArrayList()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,33 +44,36 @@ class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, Li
 
     private fun loadData() = launch {
         listAudiosFile.clear()
-        val metaRetriever = MediaMetadataRetriever()
+        listModel.clear()
         File(App.DIR_PATH).walkTopDown().forEach { file ->
             if (file.name.endsWith(".mp3")){
                 listAudiosFile.add(file.name)
-                metaRetriever.setDataSource(file.path)
-                listModel.add(UnitAudioModel(id = 0, name = file.name, duration = metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!.toLong(), location = "", size = file.length(), topic_id = "1"))
+                listModel.add(viewModel.getAudioForName(file.name.substring(0, file.name.length-4)))
             }
         }
-
         viewModel.getChosen().value.await().observe(viewLifecycleOwner, Observer {
             if (it == null) return@Observer
-            if (it.isNotEmpty()){
-                bindUI(it)
-            }
+            bindUI(it)
         })
+
     }
 
     private fun bindUI(list: List<UnitAudioModel>){
-        adapter = ChosenAdapter(ArrayList(list), this)
+        listModelChosen.clear()
+        listModelChosen.addAll(list)
+        adapter = ChosenAdapter(this)
         if (isChange) {
             tvChosen.setBackgroundResource(R.drawable.text_view_border)
+            tvChosen.setTextColor(resources.getColor(R.color.colorPrimary))
+            tvSaved.setTextColor(Color.WHITE)
             tvSaved.setBackgroundResource(R.drawable.text_view_bg)
             recyclerChosen.adapter = adapter
         }else {
             tvChosen.setBackgroundResource(R.drawable.text_view_bg)
+            tvChosen.setTextColor(Color.WHITE)
+            tvSaved.setTextColor(resources.getColor(R.color.colorPrimary))
             tvSaved.setBackgroundResource(R.drawable.text_view_border)
-            recyclerChosen.adapter = SavedAdapter(listModel, this)
+            recyclerChosen.adapter = SavedAdapter(listModel, list, this)
         }
 
         tvChosen.setOnClickListener {
@@ -86,11 +90,24 @@ class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, Li
     override val listAudios: ArrayList<String>
         get() = listAudiosFile
 
+    override val listChosen: ArrayList<UnitAudioModel>
+        get() = listModelChosen
+
     override fun addChosen(unitAudioModel: UnitAudioModel) {
+        val model = ChosenModel(
+            id = unitAudioModel.id,
+            name = unitAudioModel.name,
+            duration = unitAudioModel.duration,
+            location = unitAudioModel.location,
+            size = unitAudioModel.size,
+            topic_id = unitAudioModel.topic_id
+        )
+        viewModel.setChosen(model)
     }
 
-    override fun deleteChosen(id: Int) {
-        viewModel.deleteChosen(id)
+    override fun deleteChosen(model: UnitAudioModel) {
+        viewModel.deleteChosen(model.id)
+        listModelChosen.remove(model)
     }
 
     override fun playPause() {
@@ -107,7 +124,7 @@ class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, Li
             MainActivity.playerAdapter!!.getCurrentTitle().observeForever {
                 if (it == null) return@observeForever
                 if (adapter != null && it != ""){
-                    adapter!!.listModel.forEachIndexed { index, model ->
+                    listModelChosen.forEachIndexed { index, model ->
                         if (model.name == it){
                             adapter?.isPlaying = index
                             adapter?.notifyDataSetChanged()
@@ -116,7 +133,7 @@ class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, Li
                 }else{
                     Handler().postDelayed(Runnable {
                         if (adapter != null && it != ""){
-                            adapter!!.listModel.forEachIndexed { index, model ->
+                            listModelChosen.forEachIndexed { index, model ->
                                 if (model.name == it){
                                     if (MainActivity.playerAdapter!!.isPlaying()){
                                         adapter?.isPlaying = index
@@ -133,4 +150,18 @@ class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, Li
         }
     }
 
+}
+
+interface ChosenAction{
+    val listAudios: ArrayList<String>
+
+    val listChosen: ArrayList<UnitAudioModel>
+
+    fun addChosen(unitAudioModel: UnitAudioModel)
+
+    fun deleteChosen(model: UnitAudioModel)
+
+    fun playPause()
+
+    fun isPause(): Boolean
 }

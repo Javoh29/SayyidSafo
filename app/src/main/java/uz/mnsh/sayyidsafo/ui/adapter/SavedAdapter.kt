@@ -14,13 +14,15 @@ import com.google.gson.Gson
 import uz.mnsh.sayyidsafo.R
 import uz.mnsh.sayyidsafo.data.db.unitchosen.UnitAudioModel
 import uz.mnsh.sayyidsafo.ui.activity.PlayerActivity
+import uz.mnsh.sayyidsafo.ui.fragment.ChosenAction
 import uz.mnsh.sayyidsafo.utils.ListenActions
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class SavedAdapter(
-    val listModel: ArrayList<UnitAudioModel>,
-    private val listenActions: ListenActions
+    private val listModel: ArrayList<UnitAudioModel>,
+    private val chosenModel: List<UnitAudioModel>,
+    private val listenActions: ChosenAction
 ) :
     RecyclerView.Adapter<SavedAdapter.SavedViewHolder>() {
 
@@ -59,6 +61,12 @@ class SavedAdapter(
             holder.download.setImageResource(R.drawable.play)
         }
 
+        if (chosenModel.contains(listModel[position])){
+            holder.chosen.setImageResource(R.drawable.ic_chosen_on)
+        }else{
+            holder.chosen.setImageResource(R.drawable.ic_chosen)
+        }
+
         holder.relativeLayout.setOnClickListener {
             val intent = Intent(it.context, PlayerActivity::class.java)
             intent.putExtra("model", Gson().toJson(listModel[position]))
@@ -68,8 +76,13 @@ class SavedAdapter(
         }
 
         holder.chosen.setOnClickListener {
-            listenActions.deleteChosen(listModel[position].id)
-            notifyDataSetChanged()
+            if (chosenModel.contains(listModel[position])){
+                holder.chosen.setImageResource(R.drawable.ic_chosen)
+                listenActions.deleteChosen(listModel[position])
+            }else{
+                holder.chosen.setImageResource(R.drawable.ic_chosen_on)
+                listenActions.addChosen(listModel[position])
+            }
         }
 
         holder.download.setOnClickListener {

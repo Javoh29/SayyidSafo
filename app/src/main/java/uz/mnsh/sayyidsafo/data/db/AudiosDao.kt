@@ -17,6 +17,9 @@ interface AudiosDao {
     @Query("select * from audios_table where topic_id == :topicId")
     fun getAudios(topicId: Int): LiveData<List<UnitAudioModel>>
 
+    @Query("select * from audios_table where name == :name")
+    fun getAudioForID(name: String): UnitAudioModel
+
     @Query("DELETE FROM audios_table")
     fun deleteAudios()
 

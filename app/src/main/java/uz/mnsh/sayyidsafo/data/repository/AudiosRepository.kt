@@ -9,6 +9,8 @@ interface AudiosRepository {
 
     suspend fun getChosen(): LiveData<List<UnitAudioModel>>
 
+    suspend fun getAudioForID(name: String): UnitAudioModel
+
     fun addChosen(chosenModel: ChosenModel)
 
     fun deleteChosen(id: Int)

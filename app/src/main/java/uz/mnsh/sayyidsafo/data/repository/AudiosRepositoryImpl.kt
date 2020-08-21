@@ -30,6 +30,12 @@ class AudiosRepositoryImpl(
         }
     }
 
+    override suspend fun getAudioForID(name: String): UnitAudioModel {
+        return withContext(Dispatchers.IO){
+            return@withContext audiosDao.getAudioForID(name)
+        }
+    }
+
     override fun addChosen(chosenModel: ChosenModel) {
         GlobalScope.launch(Dispatchers.IO) {
             audiosDao.upsertChosen(chosenModel)

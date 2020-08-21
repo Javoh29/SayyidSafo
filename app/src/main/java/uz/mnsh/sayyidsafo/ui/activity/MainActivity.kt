@@ -6,17 +6,21 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.navigation.NavigationView
+import kotlinx.android.synthetic.main.activity_main.*
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.kodein
 import org.kodein.di.generic.instance
@@ -41,7 +45,7 @@ class MainActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.AppTheme_NoActionBar)
+        setTheme(R.style.AppTheme)
         setContentView(R.layout.activity_main)
 
         navView = findViewById(R.id.nav_view)
@@ -52,6 +56,14 @@ class MainActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
 
         audiosRepository.fetchAudios()
         requestPermissions()
+
+        val bottomDialog = BottomSheetDialog(this, R.style.BottomSheetDialog)
+        val bottomSheetView = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_player, findViewById(R.id.bottomSheetContainer))
+        bottomDialog.setContentView(bottomSheetView)
+
+        layoutPlayer.setOnClickListener {
+            bottomDialog.show()
+        }
     }
 
     private fun requestPermissions() {

@@ -8,8 +8,7 @@ import com.google.gson.annotations.SerializedName
 @Keep
 @Entity(tableName = "audios_table")
 data class AudioModel(
-    @PrimaryKey(autoGenerate = true)
-    var idTable: Int = 0,
+    @PrimaryKey(autoGenerate = false)
     @SerializedName("id")
     val id: Int,
     @SerializedName("name")

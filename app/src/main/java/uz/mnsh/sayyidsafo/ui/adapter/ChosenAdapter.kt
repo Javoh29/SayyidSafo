@@ -1,7 +1,6 @@
 package uz.mnsh.sayyidsafo.ui.adapter
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,16 +17,12 @@ import com.downloader.Status
 import com.google.gson.Gson
 import uz.mnsh.sayyidsafo.App
 import uz.mnsh.sayyidsafo.R
-import uz.mnsh.sayyidsafo.data.db.unitchosen.UnitAudioModel
 import uz.mnsh.sayyidsafo.ui.activity.PlayerActivity
-import uz.mnsh.sayyidsafo.utils.ListenActions
-import java.util.*
-import kotlin.collections.ArrayList
+import uz.mnsh.sayyidsafo.ui.fragment.ChosenAction
 import kotlin.collections.HashMap
 
 class ChosenAdapter(
-    val listModel: ArrayList<UnitAudioModel>,
-    private val listenActions: ListenActions
+    private val listenActions: ChosenAction
 ) :
     RecyclerView.Adapter<ChosenAdapter.ChosenViewHolder>() {
 
@@ -52,16 +47,16 @@ class ChosenAdapter(
     }
 
     override fun getItemCount(): Int {
-        return listModel.size
+        return listenActions.listChosen.size
     }
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ChosenViewHolder, position: Int) {
-        holder.tvTitle.text = listModel[position].name
-        holder.tvSize.text = String.format("%.2f", listModel[position].size / 1000.0) + "Мб"
-        holder.tvDuration.text = getFormattedTime(listModel[position].duration)
+        holder.tvTitle.text = listenActions.listChosen[position].name
+        holder.tvSize.text = String.format("%.2f", listenActions.listChosen[position].size / 1000.0) + "Мб"
+        holder.tvDuration.text = getFormattedTime(listenActions.listChosen[position].duration)
 
-        if (listenActions.listAudios.contains(listModel[position].getFileName())) {
+        if (listenActions.listAudios.contains(listenActions.listChosen[position].getFileName())) {
             if (isPlaying == position){
                 holder.download.setImageResource(R.drawable.stop)
             }else{
@@ -72,10 +67,10 @@ class ChosenAdapter(
         }
 
         holder.relativeLayout.setOnClickListener {
-            if (listenActions.listAudios.contains(listModel[position].getFileName())) {
+            if (listenActions.listAudios.contains(listenActions.listChosen[position].getFileName())) {
                 val intent = Intent(it.context, PlayerActivity::class.java)
-                intent.putExtra("model", Gson().toJson(listModel[position]))
-                intent.putParcelableArrayListExtra("all", listModel)
+                intent.putExtra("model", Gson().toJson(listenActions.listChosen[position]))
+                intent.putParcelableArrayListExtra("all", listenActions.listChosen)
                 it.context.startActivity(intent)
                 holder.download.setImageResource(R.drawable.stop)
             } else {
@@ -84,9 +79,8 @@ class ChosenAdapter(
         }
 
         holder.chosen.setOnClickListener {
-            listenActions.deleteChosen(listModel[position].id)
-            listModel.removeAt(position)
-            notifyDataSetChanged()
+            listenActions.deleteChosen(listenActions.listChosen[position])
+            listenActions.listChosen.removeAt(position)
         }
 
         holder.download.setOnClickListener {
@@ -98,10 +92,10 @@ class ChosenAdapter(
                 }
                 listenActions.playPause()
             }else{
-                if (listenActions.listAudios.contains(listModel[position].getFileName())) {
+                if (listenActions.listAudios.contains(listenActions.listChosen[position].getFileName())) {
                     val intent = Intent(it.context, PlayerActivity::class.java)
-                    intent.putExtra("model", Gson().toJson(listModel[position]))
-                    intent.putParcelableArrayListExtra("all", listModel)
+                    intent.putExtra("model", Gson().toJson(listenActions.listChosen[position]))
+                    intent.putParcelableArrayListExtra("all", listenActions.listChosen)
                     it.context.startActivity(intent)
                     holder.download.setImageResource(R.drawable.stop)
                     isPlaying = position
@@ -121,16 +115,16 @@ class ChosenAdapter(
             holder.progressBar.visibility = View.VISIBLE
             holder.download.setImageResource(R.drawable.cancel)
             idList[index] = PRDownloader.download(
-                App.BASE_URL + listModel[index].location,
-                App.DIR_PATH + "${listModel[index].topic_id}/",
-                listModel[index].getFileName()
+                App.BASE_URL + listenActions.listChosen[index].location,
+                App.DIR_PATH + "${listenActions.listChosen[index].topic_id}/",
+                listenActions.listChosen[index].getFileName()
             ).build()
                 .setOnProgressListener {
                     holder.progressBar.progress = (it.currentBytes * 100 / it.totalBytes).toInt()
                 }
                 .start(object : OnDownloadListener {
                     override fun onDownloadComplete() {
-                        listenActions.listAudios.add(listModel[index].getFileName())
+                        listenActions.listAudios.add(listenActions.listChosen[index].getFileName())
                         idList.remove(index)
                         holder.progressBar.visibility = View.GONE
                         holder.download.setImageResource(R.drawable.play)
