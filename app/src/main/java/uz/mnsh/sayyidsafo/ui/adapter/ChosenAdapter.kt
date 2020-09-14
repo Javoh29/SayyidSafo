@@ -17,7 +17,6 @@ import com.downloader.Status
 import com.google.gson.Gson
 import uz.mnsh.sayyidsafo.App
 import uz.mnsh.sayyidsafo.R
-import uz.mnsh.sayyidsafo.ui.activity.PlayerActivity
 import uz.mnsh.sayyidsafo.ui.fragment.ChosenAction
 import kotlin.collections.HashMap
 
@@ -68,10 +67,10 @@ class ChosenAdapter(
 
         holder.relativeLayout.setOnClickListener {
             if (listenActions.listAudios.contains(listenActions.listChosen[position].getFileName())) {
-                val intent = Intent(it.context, PlayerActivity::class.java)
-                intent.putExtra("model", Gson().toJson(listenActions.listChosen[position]))
-                intent.putParcelableArrayListExtra("all", listenActions.listChosen)
-                it.context.startActivity(intent)
+//                val intent = Intent(it.context, PlayerActivity::class.java)
+//                intent.putExtra("model", Gson().toJson(listenActions.listChosen[position]))
+//                intent.putParcelableArrayListExtra("all", listenActions.listChosen)
+//                it.context.startActivity(intent)
                 holder.download.setImageResource(R.drawable.stop)
             } else {
                 startDownload(position, holder)
@@ -93,10 +92,10 @@ class ChosenAdapter(
                 listenActions.playPause()
             }else{
                 if (listenActions.listAudios.contains(listenActions.listChosen[position].getFileName())) {
-                    val intent = Intent(it.context, PlayerActivity::class.java)
-                    intent.putExtra("model", Gson().toJson(listenActions.listChosen[position]))
-                    intent.putParcelableArrayListExtra("all", listenActions.listChosen)
-                    it.context.startActivity(intent)
+//                    val intent = Intent(it.context, PlayerActivity::class.java)
+//                    intent.putExtra("model", Gson().toJson(listenActions.listChosen[position]))
+//                    intent.putParcelableArrayListExtra("all", listenActions.listChosen)
+//                    it.context.startActivity(intent)
                     holder.download.setImageResource(R.drawable.stop)
                     isPlaying = position
                 } else {

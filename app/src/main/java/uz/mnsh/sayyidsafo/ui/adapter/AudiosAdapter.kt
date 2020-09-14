@@ -19,7 +19,6 @@ import com.google.gson.Gson
 import uz.mnsh.sayyidsafo.App
 import uz.mnsh.sayyidsafo.R
 import uz.mnsh.sayyidsafo.data.db.unitchosen.UnitAudioModel
-import uz.mnsh.sayyidsafo.ui.activity.PlayerActivity
 import uz.mnsh.sayyidsafo.utils.ListenActions
 import java.util.*
 import kotlin.collections.ArrayList
@@ -83,9 +82,9 @@ class AudiosAdapter(
 
         holder.relativeLayout.setOnClickListener {
             if (listenActions.listAudios.contains(listModel[position].getFileName())) {
-                val intent = Intent(it.context, PlayerActivity::class.java)
-                intent.putExtra("model", Gson().toJson(listModel[position]))
-                it.context.startActivity(intent)
+//                val intent = Intent(it.context, PlayerActivity::class.java)
+//                intent.putExtra("model", Gson().toJson(listModel[position]))
+//                it.context.startActivity(intent)
                 holder.download.setImageResource(R.drawable.stop)
             } else {
                 startDownload(position, holder)
@@ -112,9 +111,9 @@ class AudiosAdapter(
                 listenActions.playPause()
             }else{
                 if (listenActions.listAudios.contains(listModel[position].getFileName())) {
-                    val intent = Intent(it.context, PlayerActivity::class.java)
-                    intent.putExtra("model", Gson().toJson(listModel[position]))
-                    it.context.startActivity(intent)
+//                    val intent = Intent(it.context, PlayerActivity::class.java)
+//                    intent.putExtra("model", Gson().toJson(listModel[position]))
+//                    it.context.startActivity(intent)
                     holder.download.setImageResource(R.drawable.stop)
                     isPlaying = position
                 } else {

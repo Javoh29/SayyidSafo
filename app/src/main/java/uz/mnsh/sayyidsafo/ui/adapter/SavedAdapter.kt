@@ -13,11 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import uz.mnsh.sayyidsafo.R
 import uz.mnsh.sayyidsafo.data.db.unitchosen.UnitAudioModel
-import uz.mnsh.sayyidsafo.ui.activity.PlayerActivity
 import uz.mnsh.sayyidsafo.ui.fragment.ChosenAction
-import uz.mnsh.sayyidsafo.utils.ListenActions
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 class SavedAdapter(
     private val listModel: ArrayList<UnitAudioModel>,
@@ -68,10 +65,10 @@ class SavedAdapter(
         }
 
         holder.relativeLayout.setOnClickListener {
-            val intent = Intent(it.context, PlayerActivity::class.java)
-            intent.putExtra("model", Gson().toJson(listModel[position]))
-            intent.putParcelableArrayListExtra("all", listModel)
-            it.context.startActivity(intent)
+//            val intent = Intent(it.context, PlayerActivity::class.java)
+//            intent.putExtra("model", Gson().toJson(listModel[position]))
+//            intent.putParcelableArrayListExtra("all", listModel)
+//            it.context.startActivity(intent)
             holder.download.setImageResource(R.drawable.stop)
         }
 
@@ -94,10 +91,10 @@ class SavedAdapter(
                 }
                 listenActions.playPause()
             }else{
-                val intent = Intent(it.context, PlayerActivity::class.java)
-                intent.putExtra("model", Gson().toJson(listModel[position]))
-                intent.putParcelableArrayListExtra("all", listModel)
-                it.context.startActivity(intent)
+//                val intent = Intent(it.context, PlayerActivity::class.java)
+//                intent.putExtra("model", Gson().toJson(listModel[position]))
+//                intent.putParcelableArrayListExtra("all", listModel)
+//                it.context.startActivity(intent)
                 holder.download.setImageResource(R.drawable.stop)
                 isPlaying = position
             }
