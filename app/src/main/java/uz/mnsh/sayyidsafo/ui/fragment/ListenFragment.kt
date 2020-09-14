@@ -2,10 +2,8 @@ package uz.mnsh.sayyidsafo.ui.fragment
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
@@ -23,6 +21,9 @@ import uz.mnsh.sayyidsafo.App
 import uz.mnsh.sayyidsafo.R
 import uz.mnsh.sayyidsafo.data.db.model.ChosenModel
 import uz.mnsh.sayyidsafo.data.db.unitchosen.UnitAudioModel
+import uz.mnsh.sayyidsafo.data.model.SongModel
+import uz.mnsh.sayyidsafo.ui.activity.MainActivity.Companion.isSongPlay
+import uz.mnsh.sayyidsafo.ui.activity.MainActivity.Companion.pageIndex
 import uz.mnsh.sayyidsafo.ui.activity.MainActivity.Companion.playerAdapter
 import uz.mnsh.sayyidsafo.ui.adapter.AudiosAdapter
 import uz.mnsh.sayyidsafo.ui.base.ScopedFragment
@@ -41,6 +42,7 @@ class ListenFragment : ScopedFragment(R.layout.fragment_listen), KodeinAware, Li
     private lateinit var editText: AppCompatEditText
     private var listAudiosFile: ArrayList<String> = ArrayList()
     private var adapter: AudiosAdapter? = null
+    private var lessonIndex = 1
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,38 +57,49 @@ class ListenFragment : ScopedFragment(R.layout.fragment_listen), KodeinAware, Li
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = viewModelFactory.create(ListenViewModel::class.java)
-        loadData(arguments?.let {ListenFragmentArgs.fromBundle(it)}!!.index, arguments?.let {ListenFragmentArgs.fromBundle(it)}!!.sum)
+        loadData(
+            arguments?.let { ListenFragmentArgs.fromBundle(it) }!!.index
+        )
     }
 
-    private fun loadData(index: Int, sum: Int) = launch {
+    private fun loadData(index: Int) = launch {
+        lessonIndex = if (index == 0) {
+            pageIndex
+        } else {
+            index
+        }
         listAudiosFile.clear()
-        File(App.DIR_PATH + "${index}/").walkTopDown().forEach { file ->
-            if (file.name.endsWith(".mp3")){
+        File(App.DIR_PATH + "${lessonIndex+1}/").walkTopDown().forEach { file ->
+            if (file.name.endsWith(".mp3")) {
                 listAudiosFile.add(file.name)
             }
         }
 
-        viewModel.getAudios(index).value.await().observe(viewLifecycleOwner, Observer {
-            if (it == null) return@Observer
-            if (it.size == sum){
-                bindUI(it)
-            }else return@Observer
+        viewModel.getAudios(lessonIndex+1).value.await().observe(viewLifecycleOwner, Observer {
+            if (it != null && it.isNotEmpty()) {
+                loadChosen(it)
+            } else return@Observer
+        })
+    }
+
+    private fun loadChosen(list: List<UnitAudioModel>) = launch {
+        viewModel.getChosen().value.await().observe(viewLifecycleOwner, Observer {
+            if (it != null) {
+                bindUI(list, it)
+            } else return@Observer
         })
     }
 
     @SuppressLint("SetTextI18n")
-    private fun bindUI(list: List<UnitAudioModel>) = launch{
-        viewModel.getChosen().value.await().observe(viewLifecycleOwner, Observer {
-            if (it == null) return@Observer
-            adapter = AudiosAdapter(list, it,this@ListenFragment)
-            recyclerView.adapter = adapter
-            tvLessonsSum.text = "${getText(R.string.text_lesson_sum)} ${list.size}"
-            recyclerView.visibility = View.VISIBLE
-            spinKitView.visibility = View.GONE
-            spinKitView.clearAnimation()
-        })
+    private fun bindUI(list: List<UnitAudioModel>, listChosen: List<UnitAudioModel>) = launch {
+        adapter = AudiosAdapter(list, listChosen, this@ListenFragment)
+        recyclerView.adapter = adapter
+        tvLessonsSum.text = "${getText(R.string.text_lesson_sum)} ${list.size}"
+        recyclerView.visibility = View.VISIBLE
+        spinKitView.visibility = View.GONE
+        spinKitView.clearAnimation()
 
-        editText.addTextChangedListener(object : TextWatcher{
+        editText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
                 adapter!!.searchAudio(editText.text.toString())
             }
@@ -103,32 +116,64 @@ class ListenFragment : ScopedFragment(R.layout.fragment_listen), KodeinAware, Li
             Navigation.findNavController(it).popBackStack()
         }
 
-        when(list[0].topic_id.toInt()){
-            1 ->{
+        when (list[0].topic_id) {
+            1 -> {
                 tv_lesson_title.setText(R.string.text_dars1)
                 tv_lesson_subtitle.setText(R.string.text_dars_sub_1)
+                img_listen.setImageResource(R.drawable.wallpaper1)
             }
-            2 ->{
+            2 -> {
                 tv_lesson_title.setText(R.string.text_dars2)
                 tv_lesson_subtitle.setText(R.string.text_dars_sub_2)
+                img_listen.setImageResource(R.drawable.wallpaper2)
             }
-            3 ->{
+            3 -> {
                 tv_lesson_title.setText(R.string.text_dars3)
                 tv_lesson_subtitle.setText(R.string.text_dars_sub_3)
+                img_listen.setImageResource(R.drawable.wallpaper3)
             }
-            4 ->{
+            4 -> {
                 tv_lesson_title.setText(R.string.text_dars4)
                 tv_lesson_subtitle.setText(R.string.text_dars_sub_1)
+                img_listen.setImageResource(R.drawable.wallpaper4)
             }
-            5 ->{
+            5 -> {
                 tv_lesson_title.setText(R.string.text_dars5)
                 tv_lesson_subtitle.setText(R.string.text_dars_sub_1)
+                img_listen.setImageResource(R.drawable.wallpaper5)
             }
-            6 ->{
+            6 -> {
                 tv_lesson_title.setText(R.string.text_dars6)
                 tv_lesson_subtitle.setText(R.string.text_dars_sub_1)
+                img_listen.setImageResource(R.drawable.wallpaper6)
+            }
+            7 -> {
+                tv_lesson_title.setText(R.string.text_dars7)
+                tv_lesson_subtitle.setText(R.string.text_dars_sub_7)
+                img_listen.setImageResource(R.drawable.wallpaper7)
+            }
+            8 -> {
+                tv_lesson_title.setText(R.string.text_dars8)
+                tv_lesson_subtitle.setText(R.string.text_dars_sub_8)
+                img_listen.setImageResource(R.drawable.wallpaper8)
             }
         }
+
+        isSongPlay.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+            var play = true
+            list.forEachIndexed { i, model ->
+                if (model.name == playerAdapter!!.getCurrentSong()?.name) {
+                    if (it) {
+                        adapter?.isPlay = i
+                    } else adapter?.isPlay = -1
+                    play = false
+                }
+            }
+            if (play) adapter?.isPlay = -1
+            adapter?.notifyDataSetChanged()
+        })
+
     }
 
     override val listAudios: ArrayList<String>
@@ -138,13 +183,21 @@ class ListenFragment : ScopedFragment(R.layout.fragment_listen), KodeinAware, Li
         viewModel.deleteChosen(id)
     }
 
-    override fun playPause() {
-        playerAdapter!!.resumeOrPause()
+    override fun itemPlay(model: SongModel) {
+        if (playerAdapter != null) {
+            if (playerAdapter!!.getCurrentSong()?.name == model.name) {
+                if (playerAdapter!!.getMediaPlayer() != null) {
+                    playerAdapter!!.resumeOrPause()
+                } else {
+                    playerAdapter!!.initMediaPlayer()
+                }
+            } else {
+                playerAdapter!!.setCurrentSong(model, null)
+                playerAdapter!!.initMediaPlayer()
+            }
+        }
     }
 
-    override fun isPause(): Boolean {
-        return playerAdapter!!.isPlaying()
-    }
 
     override fun addChosen(unitAudioModel: UnitAudioModel) {
         val model = ChosenModel(
@@ -153,41 +206,10 @@ class ListenFragment : ScopedFragment(R.layout.fragment_listen), KodeinAware, Li
             duration = unitAudioModel.duration,
             location = unitAudioModel.location,
             size = unitAudioModel.size,
-            topic_id = unitAudioModel.topic_id
+            topic_id = unitAudioModel.topic_id,
+            rn = unitAudioModel.rn
         )
         viewModel.setChosen(model)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (playerAdapter != null){
-            playerAdapter!!.getCurrentTitle().observeForever {
-                if (it == null) return@observeForever
-                if (adapter != null && it != ""){
-                    adapter!!.listModel.forEachIndexed { index, model ->
-                        if (model.name == it){
-                            adapter?.isPlaying = index
-                            adapter?.notifyDataSetChanged()
-                        }
-                    }
-                }else{
-                    Handler().postDelayed(Runnable {
-                        if (adapter != null && it != ""){
-                            adapter!!.listModel.forEachIndexed { index, model ->
-                                if (model.name == it){
-                                    if (playerAdapter!!.isPlaying()){
-                                        adapter?.isPlaying = index
-                                        adapter?.notifyDataSetChanged()
-                                    }else{
-                                        adapter?.isPlaying = index
-                                    }
-                                }
-                            }
-                        }
-                    }, 300)
-                }
-            }
-        }
     }
 
 }

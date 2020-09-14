@@ -8,8 +8,7 @@ import com.google.gson.annotations.SerializedName
 @Keep
 @Entity(tableName = "chosen_table")
 data class ChosenModel(
-    @PrimaryKey(autoGenerate = true)
-    var idTable: Int = 0,
+    @PrimaryKey(autoGenerate = false)
     @SerializedName("id")
     val id: Int,
     @SerializedName("name")
@@ -17,9 +16,11 @@ data class ChosenModel(
     @SerializedName("location")
     val location: String,
     @SerializedName("topic_id")
-    val topic_id: String,
+    val topic_id: Int,
     @SerializedName("size")
-    val size: Long,
+    val size: String,
+    @SerializedName("rn")
+    val rn: Int,
     @SerializedName("duration")
-    val duration: Long
+    val duration: String
 )

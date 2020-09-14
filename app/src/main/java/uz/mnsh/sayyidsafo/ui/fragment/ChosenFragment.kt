@@ -15,6 +15,7 @@ import uz.mnsh.sayyidsafo.App
 import uz.mnsh.sayyidsafo.R
 import uz.mnsh.sayyidsafo.data.db.model.ChosenModel
 import uz.mnsh.sayyidsafo.data.db.unitchosen.UnitAudioModel
+import uz.mnsh.sayyidsafo.data.model.SongModel
 import uz.mnsh.sayyidsafo.ui.activity.MainActivity
 import uz.mnsh.sayyidsafo.ui.adapter.ChosenAdapter
 import uz.mnsh.sayyidsafo.ui.adapter.SavedAdapter
@@ -30,6 +31,7 @@ class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, Ch
 
     private var listAudiosFile: ArrayList<String> = ArrayList()
     private var adapter: ChosenAdapter? = null
+    private var adapterSaved: SavedAdapter? = null
     private val listModel: ArrayList<UnitAudioModel> = ArrayList()
     private val listModelChosen: ArrayList<UnitAudioModel> = ArrayList()
 
@@ -52,8 +54,9 @@ class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, Ch
             }
         }
         viewModel.getChosen().value.await().observe(viewLifecycleOwner, Observer {
-            if (it == null) return@Observer
-            bindUI(it)
+            if (it != null && it.isNotEmpty()) {
+                bindUI(it)
+            } else return@Observer
         })
 
     }
@@ -62,18 +65,19 @@ class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, Ch
         listModelChosen.clear()
         listModelChosen.addAll(list)
         adapter = ChosenAdapter(this)
+        adapterSaved = SavedAdapter(listModel, list, this)
         if (isChange) {
-            tvChosen.setBackgroundResource(R.drawable.text_view_border)
-            tvChosen.setTextColor(resources.getColor(R.color.colorPrimary))
-            tvSaved.setTextColor(Color.WHITE)
-            tvSaved.setBackgroundResource(R.drawable.text_view_bg)
-            recyclerChosen.adapter = adapter
-        }else {
             tvChosen.setBackgroundResource(R.drawable.text_view_bg)
             tvChosen.setTextColor(Color.WHITE)
             tvSaved.setTextColor(resources.getColor(R.color.colorPrimary))
             tvSaved.setBackgroundResource(R.drawable.text_view_border)
-            recyclerChosen.adapter = SavedAdapter(listModel, list, this)
+            recyclerChosen.adapter = adapter
+        }else {
+            tvChosen.setBackgroundResource(R.drawable.text_view_border)
+            tvChosen.setTextColor(resources.getColor(R.color.colorPrimary))
+            tvSaved.setTextColor(Color.WHITE)
+            tvSaved.setBackgroundResource(R.drawable.text_view_bg)
+            recyclerChosen.adapter = adapterSaved
         }
 
         tvChosen.setOnClickListener {
@@ -85,6 +89,34 @@ class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, Ch
             isChange = false
             bindUI(list)
         }
+
+        MainActivity.isSongPlay.observe(viewLifecycleOwner, Observer {
+            if (it == null) return@Observer
+            var play = true
+            if (isChange) {
+                list.forEachIndexed { i, model ->
+                    if (model.name == MainActivity.playerAdapter!!.getCurrentSong()?.name) {
+                        if (it) {
+                            adapter?.isPlay = i
+                        } else adapter?.isPlay = -1
+                        play = false
+                    }
+                }
+                if (play) adapter?.isPlay = -1
+                adapter?.notifyDataSetChanged()
+            }else{
+                listModel.forEachIndexed { i, model ->
+                    if (model.name == MainActivity.playerAdapter!!.getCurrentSong()?.name) {
+                        if (it) {
+                            adapterSaved?.isPlay = i
+                        } else adapterSaved?.isPlay = -1
+                        play = false
+                    }
+                }
+                if (play) adapterSaved?.isPlay = -1
+                adapterSaved?.notifyDataSetChanged()
+            }
+        })
     }
 
     override val listAudios: ArrayList<String>
@@ -100,7 +132,8 @@ class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, Ch
             duration = unitAudioModel.duration,
             location = unitAudioModel.location,
             size = unitAudioModel.size,
-            topic_id = unitAudioModel.topic_id
+            topic_id = unitAudioModel.topic_id,
+            rn = unitAudioModel.rn
         )
         viewModel.setChosen(model)
     }
@@ -110,42 +143,17 @@ class ChosenFragment : ScopedFragment(R.layout.fragment_chosen), KodeinAware, Ch
         listModelChosen.remove(model)
     }
 
-    override fun playPause() {
-        MainActivity.playerAdapter!!.resumeOrPause()
-    }
-
-    override fun isPause(): Boolean {
-        return MainActivity.playerAdapter!!.isPlaying()
-    }
-
-    override fun onResume() {
-        super.onResume()
+    override fun itemClick(model: SongModel) {
         if (MainActivity.playerAdapter != null){
-            MainActivity.playerAdapter!!.getCurrentTitle().observeForever {
-                if (it == null) return@observeForever
-                if (adapter != null && it != ""){
-                    listModelChosen.forEachIndexed { index, model ->
-                        if (model.name == it){
-                            adapter?.isPlaying = index
-                            adapter?.notifyDataSetChanged()
-                        }
-                    }
+            if (MainActivity.playerAdapter!!.getCurrentSong()?.name == model.name){
+                if (MainActivity.playerAdapter!!.getMediaPlayer() != null){
+                    MainActivity.playerAdapter!!.resumeOrPause()
                 }else{
-                    Handler().postDelayed(Runnable {
-                        if (adapter != null && it != ""){
-                            listModelChosen.forEachIndexed { index, model ->
-                                if (model.name == it){
-                                    if (MainActivity.playerAdapter!!.isPlaying()){
-                                        adapter?.isPlaying = index
-                                        adapter?.notifyDataSetChanged()
-                                    }else{
-                                        adapter?.isPlaying = index
-                                    }
-                                }
-                            }
-                        }
-                    }, 300)
+                    MainActivity.playerAdapter!!.initMediaPlayer()
                 }
+            }else{
+                MainActivity.playerAdapter!!.setCurrentSong(model, null)
+                MainActivity.playerAdapter!!.initMediaPlayer()
             }
         }
     }
@@ -161,7 +169,5 @@ interface ChosenAction{
 
     fun deleteChosen(model: UnitAudioModel)
 
-    fun playPause()
-
-    fun isPause(): Boolean
+    fun itemClick(model: SongModel)
 }

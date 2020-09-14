@@ -1,6 +1,7 @@
 package uz.mnsh.sayyidsafo.utils
 
 import uz.mnsh.sayyidsafo.data.db.unitchosen.UnitAudioModel
+import uz.mnsh.sayyidsafo.data.model.SongModel
 
 
 interface ListenActions {
@@ -10,7 +11,5 @@ interface ListenActions {
 
     fun deleteChosen(id: Int)
 
-    fun playPause()
-
-    fun isPause(): Boolean
+    fun itemPlay(model: SongModel)
 }

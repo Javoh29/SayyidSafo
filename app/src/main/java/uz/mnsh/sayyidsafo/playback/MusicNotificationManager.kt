@@ -6,6 +6,8 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.session.MediaSessionManager
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -17,7 +19,6 @@ import android.support.v4.media.session.MediaSessionCompat
 import uz.mnsh.sayyidsafo.R
 import uz.mnsh.sayyidsafo.data.model.SongModel
 import uz.mnsh.sayyidsafo.ui.activity.MainActivity
-import uz.mnsh.sayyidsafo.utils.Utils
 
 
 class MusicNotificationManager internal constructor(private val mMusicService: MusicService) {
@@ -61,7 +62,7 @@ class MusicNotificationManager internal constructor(private val mMusicService: M
         notificationBuilder!!
                 .setShowWhen(false)
                 .setSmallIcon(R.drawable.ic_music_player)
-                .setLargeIcon(Utils.songArt(song.songPath, mMusicService.baseContext))
+                .setLargeIcon(getImage(song.topicID))
                 .setColor(ContextCompat.getColor(context, R.color.colorPrimary))
                 .setContentTitle(songTitle)
                 .setContentIntent(contentIntent)
@@ -121,7 +122,7 @@ class MusicNotificationManager internal constructor(private val mMusicService: M
 
     private fun updateMetaData(song: SongModel) {
         mediaSession!!.setMetadata(MediaMetadataCompat.Builder()
-                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, Utils.songArt(song.songPath, context))
+                .putBitmap(MediaMetadataCompat.METADATA_KEY_ALBUM_ART, getImage(song.topicID))
                 .putString(MediaMetadataCompat.METADATA_KEY_TITLE, song.name)
                 .build())
     }
@@ -131,6 +132,21 @@ class MusicNotificationManager internal constructor(private val mMusicService: M
         internal val PLAY_PAUSE_ACTION = "action.PLAYPAUSE"
         internal val NEXT_ACTION = "action.NEXT"
         internal val PREV_ACTION = "action.PREV"
+    }
+
+    private fun getImage(id: String): Bitmap{
+        var b: Bitmap? = null
+        when(id){
+            "1" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_1)
+            "2" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_2)
+            "3" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_3)
+            "4" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_4)
+            "5" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_5)
+            "6" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_6)
+            "7" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_7)
+            "8" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_8)
+        }
+        return b!!
     }
 
 }

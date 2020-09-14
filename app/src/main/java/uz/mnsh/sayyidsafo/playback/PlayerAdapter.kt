@@ -3,6 +3,7 @@ package uz.mnsh.sayyidsafo.playback
 import android.media.MediaPlayer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import uz.mnsh.sayyidsafo.data.db.unitchosen.UnitAudioModel
 import uz.mnsh.sayyidsafo.data.model.SongModel
 
 import uz.mnsh.sayyidsafo.playback.PlaybackInfoListener.*
@@ -42,8 +43,7 @@ interface PlayerAdapter {
 
     fun registerNotificationActionsReceiver(isRegister: Boolean)
 
-
-    fun setCurrentSong(song: SongModel, songs: List<SongModel>)
+    fun setCurrentSong(song: SongModel, chosenList: List<UnitAudioModel>?)
 
     fun onPauseActivity()
 

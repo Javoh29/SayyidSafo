@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragment.CarModeFragment">
+    android:id="@+id/frameCar"
+    android:visibility="gone">
 
     <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="match_parent"
@@ -35,7 +36,7 @@
                 app:layout_constraintTop_toTopOf="parent"/>
 
             <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/img_play"
+                android:id="@+id/img_play_car"
                 android:layout_width="110dp"
                 android:layout_height="110dp"
                 android:src="@drawable/play"
@@ -46,8 +47,8 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/img_replay_back"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:src="@drawable/ic_replay_back"
                 app:layout_constraintTop_toBottomOf="@id/tv_title"
                 app:layout_constraintStart_toStartOf="parent"
@@ -56,13 +57,12 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/img_replay_next"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:src="@drawable/ic_replay_next"
                 app:layout_constraintTop_toBottomOf="@id/tv_title"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/img_play"/>
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

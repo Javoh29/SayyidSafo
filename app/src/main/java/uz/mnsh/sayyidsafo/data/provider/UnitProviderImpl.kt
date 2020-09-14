@@ -25,7 +25,7 @@ class UnitProviderImpl(private val context: Context) : PreferenceProvider(contex
     }
 
     override fun getSavedAudio(): String {
-        return preferences.getString(audioSaved, "not")!!
+        return preferences.getString(audioSaved, "")!!
     }
 
     override fun setSavedAudio(audio: String) {

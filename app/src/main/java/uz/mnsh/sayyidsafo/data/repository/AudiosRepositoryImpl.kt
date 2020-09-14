@@ -19,19 +19,19 @@ class AudiosRepositoryImpl(
 ) : AudiosRepository {
 
     override suspend fun getAudios(id: Int): LiveData<out List<UnitAudioModel>> {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             return@withContext audiosDao.getAudios(topicId = id)
         }
     }
 
     override suspend fun getChosen(): LiveData<List<UnitAudioModel>> {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             return@withContext audiosDao.getChosen()
         }
     }
 
     override suspend fun getAudioForID(name: String): UnitAudioModel {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             return@withContext audiosDao.getAudioForID(name)
         }
     }
@@ -48,27 +48,21 @@ class AudiosRepositoryImpl(
         }
     }
 
-    private fun persistFetchedAudios(audiosResponse: AudioResponse){
+    override fun fetchAudios() {
         GlobalScope.launch(Dispatchers.IO) {
-            audiosResponse.items.forEach {
-                audiosDao.upsertAudios(it)
-            }
-        }
-    }
-
-    override fun fetchAudios(){
-        GlobalScope.launch(Dispatchers.IO){
-            if (unitProvider.isOnline()){
-                audiosDao.deleteAudios()
-                for (i in 1..6){
-                    val fetchResponse = api.getAudiosAsync(i, 1).await()
-                    unitProvider.setSavedSum(i, fetchResponse._meta.totalCount)
-                    persistFetchedAudios(fetchResponse)
-                    if (fetchResponse._meta.pageCount > 1){
-                        for (j in 2..fetchResponse._meta.pageCount){
-                            persistFetchedAudios(api.getAudiosAsync(i, j).await())
+            if (unitProvider.isOnline()) {
+                try {
+                    audiosDao.deleteAudios()
+                    for (i in 2..9) {
+                        val fetchResponse = api.getAudiosAsync(i)
+                        if (fetchResponse.isSuccessful && fetchResponse.body()!!.data.isNotEmpty()) {
+                            unitProvider.setSavedSum(i, fetchResponse.body()!!.data.size)
+                            fetchResponse.body()!!.data.forEach {
+                                audiosDao.upsertAudios(it)
+                            }
                         }
                     }
+                } catch (e: Exception) {
                 }
             }
         }

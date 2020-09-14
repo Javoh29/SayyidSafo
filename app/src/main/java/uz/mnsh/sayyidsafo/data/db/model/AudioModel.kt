@@ -16,9 +16,11 @@ data class AudioModel(
     @SerializedName("location")
     val location: String,
     @SerializedName("topic_id")
-    val topic_id: String,
+    val topic_id: Int,
     @SerializedName("size")
-    val size: Long,
+    val size: String,
+    @SerializedName("rn")
+    val rn: Int,
     @SerializedName("duration")
-    val duration: Long
+    val duration: String
 )

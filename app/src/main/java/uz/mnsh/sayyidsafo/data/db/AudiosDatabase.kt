@@ -9,7 +9,7 @@ import uz.mnsh.sayyidsafo.data.db.model.ChosenModel
 
 @Database(
     entities = [AudioModel::class, ChosenModel::class],
-    version = 2
+    version = 4
 )
 abstract class AudiosDatabase: RoomDatabase() {
     abstract fun audiosDao(): AudiosDao

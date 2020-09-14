@@ -54,7 +54,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/songImg"
+                android:id="@+id/imgSong"
                 android:layout_width="50dp"
                 android:layout_height="0dp"
                 android:elevation="4dp"
@@ -74,7 +74,7 @@
                 android:fontFamily="@font/alegriya_medium"
                 android:textColor="@color/colorPrimary"
                 app:layout_constraintTop_toBottomOf="@id/progressBar"
-                app:layout_constraintStart_toEndOf="@id/songImg"
+                app:layout_constraintStart_toEndOf="@id/imgSong"
                 app:layout_constraintEnd_toStartOf="@id/imgPlay"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
@@ -103,5 +103,7 @@
         app:itemTextColor="@color/colorPrimary"
         app:menu="@menu/navigation_menu"
         app:itemIconSize="23dp"/>
+
+    <include layout="@layout/merge_card_mode"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>

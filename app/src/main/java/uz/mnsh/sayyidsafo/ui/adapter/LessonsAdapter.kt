@@ -10,6 +10,7 @@ import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import uz.mnsh.sayyidsafo.R
 import uz.mnsh.sayyidsafo.data.model.LessonsModel
+import uz.mnsh.sayyidsafo.ui.activity.MainActivity.Companion.pageIndex
 import uz.mnsh.sayyidsafo.ui.fragment.HomeFragmentDirections
 
 class LessonsAdapter(private val list: List<LessonsModel>): RecyclerView.Adapter<LessonsAdapter.LessonsViewHolder>() {

@@ -4,8 +4,19 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
+import com.google.gson.Gson
+import org.kodein.di.KodeinAware
+import org.kodein.di.android.kodein
+import org.kodein.di.generic.instance
+import uz.mnsh.sayyidsafo.data.provider.UnitProvider
+import uz.mnsh.sayyidsafo.ui.activity.MainActivity
+import java.lang.NullPointerException
 
-class MusicService : Service() {
+class MusicService : Service(), KodeinAware {
+
+    override val kodein by kodein()
+    private val unitProvider: UnitProvider by instance<UnitProvider>()
+
     private val mIBinder = LocalBinder()
 
     var mediaPlayerHolder: MediaPlayerHolder? = null
@@ -24,6 +35,9 @@ class MusicService : Service() {
         mediaPlayerHolder!!.registerNotificationActionsReceiver(false)
         musicNotificationManager = null
         mediaPlayerHolder!!.release()
+        try {
+            unitProvider.setSavedAudio(Gson().toJson(mediaPlayerHolder?.getCurrentSong()))
+        }catch (e: NullPointerException){}
         super.onDestroy()
     }
 

@@ -17,7 +17,8 @@ import com.downloader.Status
 import com.google.gson.Gson
 import uz.mnsh.sayyidsafo.App
 import uz.mnsh.sayyidsafo.R
-import uz.mnsh.sayyidsafo.ui.activity.PlayerActivity
+import uz.mnsh.sayyidsafo.data.model.SongModel
+import uz.mnsh.sayyidsafo.ui.activity.MainActivity
 import uz.mnsh.sayyidsafo.ui.fragment.ChosenAction
 import kotlin.collections.HashMap
 
@@ -27,7 +28,7 @@ class ChosenAdapter(
     RecyclerView.Adapter<ChosenAdapter.ChosenViewHolder>() {
 
     private var idList: HashMap<Int, Int> = HashMap()
-    var isPlaying: Int = -1
+    var isPlay: Int = -1
 
     class ChosenViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvTitle: AppCompatTextView = view.findViewById(R.id.tv_name)
@@ -53,11 +54,11 @@ class ChosenAdapter(
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ChosenViewHolder, position: Int) {
         holder.tvTitle.text = listenActions.listChosen[position].name
-        holder.tvSize.text = String.format("%.2f", listenActions.listChosen[position].size / 1000.0) + "Мб"
-        holder.tvDuration.text = getFormattedTime(listenActions.listChosen[position].duration)
+        holder.tvSize.text = String.format("%.2f", listenActions.listChosen[position].size.toLong() / 1000.0) + "Мб"
+        holder.tvDuration.text = getFormattedTime(listenActions.listChosen[position].duration.toLong())
 
         if (listenActions.listAudios.contains(listenActions.listChosen[position].getFileName())) {
-            if (isPlaying == position){
+            if (isPlay == position){
                 holder.download.setImageResource(R.drawable.stop)
             }else{
                 holder.download.setImageResource(R.drawable.play)
@@ -67,15 +68,13 @@ class ChosenAdapter(
         }
 
         holder.relativeLayout.setOnClickListener {
-            if (listenActions.listAudios.contains(listenActions.listChosen[position].getFileName())) {
-                val intent = Intent(it.context, PlayerActivity::class.java)
-                intent.putExtra("model", Gson().toJson(listenActions.listChosen[position]))
-                intent.putParcelableArrayListExtra("all", listenActions.listChosen)
-                it.context.startActivity(intent)
-                holder.download.setImageResource(R.drawable.stop)
-            } else {
-                startDownload(position, holder)
-            }
+            if (listenActions.listAudios.contains(listenActions.listChosen[position].getFileName())){
+                listenActions.itemClick(SongModel(
+                    name = listenActions.listChosen[position].name,
+                    songPath = App.DIR_PATH + listenActions.listChosen[position].topic_id + "/" + listenActions.listChosen[position].getFileName(),
+                    topicID = listenActions.listChosen[position].topic_id.toString()
+                ))
+            }else startDownload(position, holder)
         }
 
         holder.chosen.setOnClickListener {
@@ -84,25 +83,13 @@ class ChosenAdapter(
         }
 
         holder.download.setOnClickListener {
-            if (isPlaying == position){
-                if (listenActions.isPause()){
-                    holder.download.setImageResource(R.drawable.play)
-                }else{
-                    holder.download.setImageResource(R.drawable.stop)
-                }
-                listenActions.playPause()
-            }else{
-                if (listenActions.listAudios.contains(listenActions.listChosen[position].getFileName())) {
-                    val intent = Intent(it.context, PlayerActivity::class.java)
-                    intent.putExtra("model", Gson().toJson(listenActions.listChosen[position]))
-                    intent.putParcelableArrayListExtra("all", listenActions.listChosen)
-                    it.context.startActivity(intent)
-                    holder.download.setImageResource(R.drawable.stop)
-                    isPlaying = position
-                } else {
-                    startDownload(position, holder)
-                }
-            }
+            if (listenActions.listAudios.contains(listenActions.listChosen[position].getFileName())){
+                listenActions.itemClick(SongModel(
+                    name = listenActions.listChosen[position].name,
+                    songPath = App.DIR_PATH + listenActions.listChosen[position].topic_id + "/" + listenActions.listChosen[position].getFileName(),
+                    topicID = listenActions.listChosen[position].topic_id.toString()
+                ))
+            }else startDownload(position, holder)
         }
     }
 
@@ -115,7 +102,7 @@ class ChosenAdapter(
             holder.progressBar.visibility = View.VISIBLE
             holder.download.setImageResource(R.drawable.cancel)
             idList[index] = PRDownloader.download(
-                App.BASE_URL + listenActions.listChosen[index].location,
+                "http://5.182.26.44:8080/storage/" + listenActions.listChosen[index].location,
                 App.DIR_PATH + "${listenActions.listChosen[index].topic_id}/",
                 listenActions.listChosen[index].getFileName()
             ).build()
@@ -126,8 +113,7 @@ class ChosenAdapter(
                     override fun onDownloadComplete() {
                         listenActions.listAudios.add(listenActions.listChosen[index].getFileName())
                         idList.remove(index)
-                        holder.progressBar.visibility = View.GONE
-                        holder.download.setImageResource(R.drawable.play)
+                        notifyItemChanged(index)
                     }
 
                     override fun onError(error: com.downloader.Error?) {

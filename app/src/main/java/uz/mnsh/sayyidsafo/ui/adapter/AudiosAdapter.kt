@@ -1,8 +1,6 @@
 package uz.mnsh.sayyidsafo.ui.adapter
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,11 +13,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
 import com.downloader.Status
-import com.google.gson.Gson
 import uz.mnsh.sayyidsafo.App
 import uz.mnsh.sayyidsafo.R
 import uz.mnsh.sayyidsafo.data.db.unitchosen.UnitAudioModel
-import uz.mnsh.sayyidsafo.ui.activity.PlayerActivity
+import uz.mnsh.sayyidsafo.data.model.SongModel
 import uz.mnsh.sayyidsafo.utils.ListenActions
 import java.util.*
 import kotlin.collections.ArrayList
@@ -35,7 +32,7 @@ class AudiosAdapter(
     var listModel: ArrayList<UnitAudioModel> = ArrayList(listModel)
     private val listModelReserv: List<UnitAudioModel> = listModel
     private var idList: HashMap<Int, Int> = HashMap()
-    var isPlaying: Int = -1
+    var isPlay: Int = -1
 
     class AudiosViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvTitle: AppCompatTextView = view.findViewById(R.id.tv_name)
@@ -45,7 +42,6 @@ class AudiosAdapter(
         val download: AppCompatImageView = view.findViewById(R.id.img_download)
         val chosen: AppCompatImageView = view.findViewById(R.id.img_chosen)
         val relativeLayout: RelativeLayout = view.findViewById(R.id.relative_item)
-        val mContext: Context = view.context
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AudiosViewHolder {
@@ -62,65 +58,54 @@ class AudiosAdapter(
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: AudiosViewHolder, position: Int) {
         holder.tvTitle.text = listModel[position].name
-        holder.tvSize.text = String.format("%.2f", listModel[position].size / 1000.0) + "Мб"
-        holder.tvDuration.text = getFormattedTime(listModel[position].duration)
+        holder.tvSize.text = String.format("%.2f", listModel[position].size.toLong() / 1000.0) + "Мб"
+        holder.tvDuration.text = getFormattedTime(listModel[position].duration.toLong())
+        holder.progressBar.visibility = View.GONE
 
         if (listenActions.listAudios.contains(listModel[position].getFileName())) {
-            if (isPlaying == position){
+            if (isPlay == position) {
                 holder.download.setImageResource(R.drawable.stop)
-            }else{
+            } else {
                 holder.download.setImageResource(R.drawable.play)
             }
         } else {
             holder.download.setImageResource(R.drawable.download)
         }
 
-        if (chosenModel.contains(listModel[position])){
+        if (chosenModel.contains(listModel[position])) {
             holder.chosen.setImageResource(R.drawable.ic_chosen_on)
-        }else{
+        } else {
             holder.chosen.setImageResource(R.drawable.ic_chosen)
         }
 
         holder.relativeLayout.setOnClickListener {
-            if (listenActions.listAudios.contains(listModel[position].getFileName())) {
-                val intent = Intent(it.context, PlayerActivity::class.java)
-                intent.putExtra("model", Gson().toJson(listModel[position]))
-                it.context.startActivity(intent)
-                holder.download.setImageResource(R.drawable.stop)
-            } else {
-                startDownload(position, holder)
-            }
+            if (listenActions.listAudios.contains(listModel[position].getFileName())){
+                listenActions.itemPlay(SongModel(
+                    name = listModel[position].name,
+                    songPath = App.DIR_PATH + listModel[position].topic_id + "/" + listModel[position].getFileName(),
+                    topicID = listModel[position].topic_id.toString()
+                ))
+            }else startDownload(position, holder)
         }
 
         holder.chosen.setOnClickListener {
-            if (chosenModel.contains(listModel[position])){
+            if (chosenModel.contains(listModel[position])) {
                 holder.chosen.setImageResource(R.drawable.ic_chosen)
                 listenActions.deleteChosen(listModel[position].id)
-            }else{
+            } else {
                 holder.chosen.setImageResource(R.drawable.ic_chosen_on)
                 listenActions.addChosen(listModel[position])
             }
         }
 
         holder.download.setOnClickListener {
-            if (isPlaying == position){
-                if (listenActions.isPause()){
-                    holder.download.setImageResource(R.drawable.play)
-                }else{
-                    holder.download.setImageResource(R.drawable.stop)
-                }
-                listenActions.playPause()
-            }else{
-                if (listenActions.listAudios.contains(listModel[position].getFileName())) {
-                    val intent = Intent(it.context, PlayerActivity::class.java)
-                    intent.putExtra("model", Gson().toJson(listModel[position]))
-                    it.context.startActivity(intent)
-                    holder.download.setImageResource(R.drawable.stop)
-                    isPlaying = position
-                } else {
-                    startDownload(position, holder)
-                }
-            }
+            if (listenActions.listAudios.contains(listModel[position].getFileName())){
+                listenActions.itemPlay(SongModel(
+                    name = listModel[position].name,
+                    songPath = App.DIR_PATH + listModel[position].topic_id + "/" + listModel[position].getFileName(),
+                    topicID = listModel[position].topic_id.toString()
+                ))
+            }else startDownload(position, holder)
         }
     }
 
@@ -133,7 +118,7 @@ class AudiosAdapter(
             holder.progressBar.visibility = View.VISIBLE
             holder.download.setImageResource(R.drawable.cancel)
             idList[index] = PRDownloader.download(
-                App.BASE_URL + listModel[index].location,
+                "http://5.182.26.44:8080/storage/" + listModel[index].location,
                 App.DIR_PATH + "${listModel[index].topic_id}/",
                 listModel[index].getFileName()
             ).build()
@@ -144,8 +129,7 @@ class AudiosAdapter(
                     override fun onDownloadComplete() {
                         listenActions.listAudios.add(listModel[index].getFileName())
                         idList.remove(index)
-                        holder.progressBar.visibility = View.GONE
-                        holder.download.setImageResource(R.drawable.play)
+                        notifyItemChanged(index)
                     }
 
                     override fun onError(error: com.downloader.Error?) {
@@ -161,13 +145,13 @@ class AudiosAdapter(
         return String.format("%d:%02d", minutes, seconds % 60)
     }
 
-    fun searchAudio(text: String){
+    fun searchAudio(text: String) {
         listModel.clear()
-        if (text.isEmpty()){
+        if (text.isEmpty()) {
             listModel = ArrayList(listModelReserv)
-        }else{
-            listModelReserv.forEach {it ->
-                if (it.name.toLowerCase(Locale.ROOT).contains(text.toLowerCase(Locale.ROOT))){
+        } else {
+            listModelReserv.forEach { it ->
+                if (it.name.toLowerCase(Locale.ROOT).contains(text.toLowerCase(Locale.ROOT))) {
                     listModel.add(it)
                 }
             }

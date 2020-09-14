@@ -11,7 +11,10 @@ import android.media.MediaPlayer
 import android.os.PowerManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import uz.mnsh.sayyidsafo.App
+import uz.mnsh.sayyidsafo.data.db.unitchosen.UnitAudioModel
 import uz.mnsh.sayyidsafo.data.model.SongModel
+import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -97,7 +100,35 @@ class MediaPlayerHolder(private val mMusicService: MusicService?) :
     }
 
 
-    override fun setCurrentSong(song: SongModel, songs: List<SongModel>) {
+    override fun setCurrentSong(song: SongModel, chosenList: List<UnitAudioModel>?) {
+        val songs: ArrayList<SongModel> = ArrayList()
+        if (chosenList == null) {
+            File(App.DIR_PATH + "${song.topicID}/").walkTopDown().forEach { file ->
+                if (file.name.endsWith(".mp3")) {
+                    val sm = SongModel(
+                        name = file.name.substring(0, file.name.length - 4),
+                        songPath = file.path,
+                        topicID = song.topicID
+                    )
+                    songs.add(sm)
+                }
+            }
+        }else{
+            File(App.DIR_PATH).walkTopDown().forEach { file ->
+                if (file.name.endsWith(".mp3")) {
+                    chosenList.forEach {
+                        if (it.getFileName() == file.name) {
+                            val sm = SongModel(
+                                name = it.name,
+                                songPath = file.path,
+                                topicID = it.topic_id.toString()
+                            )
+                            songs.add(sm)
+                        }
+                    }
+                }
+            }
+        }
         mSelectedSong = song
         mSongs = songs
         currentTitle.postValue(song.name)

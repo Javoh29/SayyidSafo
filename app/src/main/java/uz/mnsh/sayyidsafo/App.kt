@@ -30,14 +30,14 @@ class App: Application(), KodeinAware {
             bind() from singleton { instance<AudiosDatabase>().audiosDao() }
             bind<UnitProvider>() with singleton { UnitProviderImpl(instance()) }
             bind<ConnectivityInterceptor>() with singleton { ConnectivityInterceptorImpl(instance()) }
-            bind() from singleton { ApiService(instance()) }
+            bind() from singleton { ApiService() }
             bind<AudiosRepository>() with singleton { AudiosRepositoryImpl(instance(), instance(), instance()) }
             bind() from provider { ListenViewModelFactory(instance()) }
             bind() from provider { ChosenViewModelFactory(instance()) }
         }
 
     companion object {
-        const val BASE_URL = "http://5.182.26.44/"
+        const val BASE_URL = "http://5.182.26.44:8080/api/"
         var DIR_PATH = ""
     }
 

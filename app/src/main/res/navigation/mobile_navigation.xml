@@ -25,7 +25,7 @@
 
         <argument
             android:name="index"
-            android:defaultValue="1"
+            android:defaultValue="0"
             app:argType="integer" />
 
         <argument

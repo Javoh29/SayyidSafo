@@ -3,6 +3,7 @@ package uz.mnsh.sayyidsafo.data.db.unitchosen
 import android.os.Parcelable
 import androidx.annotation.Keep
 import androidx.room.ColumnInfo
+import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 @Keep
@@ -15,11 +16,13 @@ data class UnitAudioModel(
     @ColumnInfo(name = "location")
     val location: String,
     @ColumnInfo(name = "topic_id")
-    val topic_id: String,
+    val topic_id: Int,
     @ColumnInfo(name = "size")
-    val size: Long,
+    val size: String,
+    @ColumnInfo(name = "rn")
+    val rn: Int,
     @ColumnInfo(name = "duration")
-    val duration: Long
+    val duration: String
 ): Parcelable {
     fun getFileName(): String {
         return "$name.mp3"

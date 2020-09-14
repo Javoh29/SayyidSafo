@@ -11,13 +11,13 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
+import uz.mnsh.sayyidsafo.App
 import uz.mnsh.sayyidsafo.R
 import uz.mnsh.sayyidsafo.data.db.unitchosen.UnitAudioModel
-import uz.mnsh.sayyidsafo.ui.activity.PlayerActivity
+import uz.mnsh.sayyidsafo.data.model.SongModel
+import uz.mnsh.sayyidsafo.ui.activity.MainActivity
 import uz.mnsh.sayyidsafo.ui.fragment.ChosenAction
-import uz.mnsh.sayyidsafo.utils.ListenActions
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 class SavedAdapter(
     private val listModel: ArrayList<UnitAudioModel>,
@@ -26,7 +26,7 @@ class SavedAdapter(
 ) :
     RecyclerView.Adapter<SavedAdapter.SavedViewHolder>() {
 
-    var isPlaying: Int = -1
+    var isPlay: Int = -1
 
     class SavedViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvTitle: AppCompatTextView = view.findViewById(R.id.tv_name)
@@ -52,10 +52,10 @@ class SavedAdapter(
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: SavedViewHolder, position: Int) {
         holder.tvTitle.text = listModel[position].name
-        holder.tvSize.text = String.format("%.2f", listModel[position].size / 1000.0) + "Мб"
-        holder.tvDuration.text = getFormattedTime(listModel[position].duration)
+        holder.tvSize.text = String.format("%.2f", listModel[position].size.toLong() / 1000.0) + "Мб"
+        holder.tvDuration.text = getFormattedTime(listModel[position].duration.toLong())
 
-        if (isPlaying == position){
+        if (isPlay == position){
             holder.download.setImageResource(R.drawable.stop)
         }else{
             holder.download.setImageResource(R.drawable.play)
@@ -68,11 +68,11 @@ class SavedAdapter(
         }
 
         holder.relativeLayout.setOnClickListener {
-            val intent = Intent(it.context, PlayerActivity::class.java)
-            intent.putExtra("model", Gson().toJson(listModel[position]))
-            intent.putParcelableArrayListExtra("all", listModel)
-            it.context.startActivity(intent)
-            holder.download.setImageResource(R.drawable.stop)
+            listenActions.itemClick(SongModel(
+                name = listModel[position].name,
+                songPath = App.DIR_PATH + listModel[position].topic_id + "/" + listModel[position].getFileName(),
+                topicID = listModel[position].topic_id.toString()
+            ))
         }
 
         holder.chosen.setOnClickListener {
@@ -86,21 +86,11 @@ class SavedAdapter(
         }
 
         holder.download.setOnClickListener {
-            if (isPlaying == position){
-                if (listenActions.isPause()){
-                    holder.download.setImageResource(R.drawable.play)
-                }else{
-                    holder.download.setImageResource(R.drawable.stop)
-                }
-                listenActions.playPause()
-            }else{
-                val intent = Intent(it.context, PlayerActivity::class.java)
-                intent.putExtra("model", Gson().toJson(listModel[position]))
-                intent.putParcelableArrayListExtra("all", listModel)
-                it.context.startActivity(intent)
-                holder.download.setImageResource(R.drawable.stop)
-                isPlaying = position
-            }
+            listenActions.itemClick(SongModel(
+                name = listModel[position].name,
+                songPath = App.DIR_PATH + listModel[position].topic_id + "/" + listModel[position].getFileName(),
+                topicID = listModel[position].topic_id.toString()
+            ))
         }
     }
 
