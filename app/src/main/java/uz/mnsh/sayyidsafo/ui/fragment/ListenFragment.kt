@@ -117,42 +117,42 @@ class ListenFragment : ScopedFragment(R.layout.fragment_listen), KodeinAware, Li
         }
 
         when (list[0].topic_id) {
-            1 -> {
+            2 -> {
                 tv_lesson_title.setText(R.string.text_dars1)
                 tv_lesson_subtitle.setText(R.string.text_dars_sub_1)
                 img_listen.setImageResource(R.drawable.wallpaper1)
             }
-            2 -> {
+            3 -> {
                 tv_lesson_title.setText(R.string.text_dars2)
                 tv_lesson_subtitle.setText(R.string.text_dars_sub_2)
                 img_listen.setImageResource(R.drawable.wallpaper2)
             }
-            3 -> {
+            4 -> {
                 tv_lesson_title.setText(R.string.text_dars3)
                 tv_lesson_subtitle.setText(R.string.text_dars_sub_3)
                 img_listen.setImageResource(R.drawable.wallpaper3)
             }
-            4 -> {
+            5 -> {
                 tv_lesson_title.setText(R.string.text_dars4)
-                tv_lesson_subtitle.setText(R.string.text_dars_sub_1)
+                tv_lesson_subtitle.setText(R.string.text_dars_sub_4)
                 img_listen.setImageResource(R.drawable.wallpaper4)
             }
-            5 -> {
+            6 -> {
                 tv_lesson_title.setText(R.string.text_dars5)
-                tv_lesson_subtitle.setText(R.string.text_dars_sub_1)
+                tv_lesson_subtitle.setText(R.string.text_dars_sub_5)
                 img_listen.setImageResource(R.drawable.wallpaper5)
             }
-            6 -> {
+            7 -> {
                 tv_lesson_title.setText(R.string.text_dars6)
-                tv_lesson_subtitle.setText(R.string.text_dars_sub_1)
+                tv_lesson_subtitle.setText(R.string.text_dars_sub_6)
                 img_listen.setImageResource(R.drawable.wallpaper6)
             }
-            7 -> {
+            8 -> {
                 tv_lesson_title.setText(R.string.text_dars7)
                 tv_lesson_subtitle.setText(R.string.text_dars_sub_7)
                 img_listen.setImageResource(R.drawable.wallpaper7)
             }
-            8 -> {
+            9 -> {
                 tv_lesson_title.setText(R.string.text_dars8)
                 tv_lesson_subtitle.setText(R.string.text_dars_sub_8)
                 img_listen.setImageResource(R.drawable.wallpaper8)

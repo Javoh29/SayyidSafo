@@ -18,6 +18,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.SeekBar
+import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
@@ -35,6 +36,9 @@ import com.google.gson.Gson
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.merge_card_mode.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.kodein
 import org.kodein.di.generic.instance
@@ -147,7 +151,15 @@ class MainActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
         imgAuthor = bottomSheetView.findViewById(R.id.img_circle)
         tvTitleBottom = bottomSheetView.findViewById(R.id.tv_title)
 
-        audiosRepository.fetchAudios()
+        GlobalScope.launch(Dispatchers.IO) {
+            if (unitProvider.isOnline()) {
+                audiosRepository.fetchAudios()
+            } else {
+                launch(Dispatchers.Main) {
+                    Toast.makeText(this@MainActivity, "Internet bilan aloqa yoq", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
         requestPermissions()
 
         if (unitProvider.getSavedAudio().isNotEmpty()){
@@ -156,10 +168,12 @@ class MainActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
                 SongModel::class.java
             )
 
-            val metaRetriever = MediaMetadataRetriever()
-            metaRetriever.setDataSource(songModel?.songPath)
+            if (songModel != null) {
+                val metaRetriever = MediaMetadataRetriever()
+                metaRetriever.setDataSource(songModel?.songPath)
+                bindUI(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!.toLong())
+            } else bindUI(0L)
 
-            bindUI(metaRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)!!.toLong())
         }else{
             bindUI(0L)
         }

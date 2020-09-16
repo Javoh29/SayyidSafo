@@ -23,7 +23,7 @@ import uz.mnsh.sayyidsafo.ui.activity.MainActivity
 
 class MusicNotificationManager internal constructor(private val mMusicService: MusicService) {
     private val CHANNEL_ID = "action.CHANNEL_ID"
-    private val REQUEST_CODE = 100
+    private val REQUEST_CODE = 111
     val notificationManager: NotificationManager = mMusicService.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     var notificationBuilder: NotificationCompat.Builder? = null
         private set

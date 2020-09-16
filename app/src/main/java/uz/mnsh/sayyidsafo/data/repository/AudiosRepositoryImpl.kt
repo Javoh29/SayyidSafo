@@ -50,20 +50,18 @@ class AudiosRepositoryImpl(
 
     override fun fetchAudios() {
         GlobalScope.launch(Dispatchers.IO) {
-            if (unitProvider.isOnline()) {
-                try {
-                    audiosDao.deleteAudios()
-                    for (i in 2..9) {
-                        val fetchResponse = api.getAudiosAsync(i)
-                        if (fetchResponse.isSuccessful && fetchResponse.body()!!.data.isNotEmpty()) {
-                            unitProvider.setSavedSum(i, fetchResponse.body()!!.data.size)
-                            fetchResponse.body()!!.data.forEach {
-                                audiosDao.upsertAudios(it)
-                            }
+            try {
+                audiosDao.deleteAudios()
+                for (i in 2..9) {
+                    val fetchResponse = api.getAudiosAsync(i)
+                    if (fetchResponse.isSuccessful && fetchResponse.body()!!.data.isNotEmpty()) {
+                        unitProvider.setSavedSum(i, fetchResponse.body()!!.data.size)
+                        fetchResponse.body()!!.data.forEach {
+                            audiosDao.upsertAudios(it)
                         }
                     }
-                } catch (e: Exception) {
                 }
+            } catch (e: Exception) {
             }
         }
     }
