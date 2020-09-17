@@ -503,49 +503,49 @@ class MainActivity : AppCompatActivity(), KodeinAware, NavigationView.OnNavigati
 
     private fun setImageSong(id: String){
         when (id) {
-            "1" -> {
+            "2" -> {
                 tvTitleBottom.setText(R.string.text_dars1)
                 songImg.setImageResource(R.drawable.img_song_1)
                 imgSong.setImageResource(R.drawable.img_song_1)
                 pageIndex = 1
             }
-            "2" -> {
+            "3" -> {
                 tvTitleBottom.setText(R.string.text_dars2)
                 songImg.setImageResource(R.drawable.img_song_2)
                 imgSong.setImageResource(R.drawable.img_song_2)
                 pageIndex = 2
             }
-            "3" -> {
+            "4" -> {
                 tvTitleBottom.setText(R.string.text_dars3)
                 songImg.setImageResource(R.drawable.img_song_3)
                 imgSong.setImageResource(R.drawable.img_song_3)
                 pageIndex = 3
             }
-            "4" -> {
+            "5" -> {
                 tvTitleBottom.setText(R.string.text_dars4)
                 songImg.setImageResource(R.drawable.img_song_4)
                 imgSong.setImageResource(R.drawable.img_song_4)
                 pageIndex = 4
             }
-            "5" -> {
+            "6" -> {
                 tvTitleBottom.setText(R.string.text_dars5)
                 songImg.setImageResource(R.drawable.img_song_5)
                 imgSong.setImageResource(R.drawable.img_song_5)
                 pageIndex = 5
             }
-            "6" -> {
+            "7" -> {
                 tvTitleBottom.setText(R.string.text_dars6)
                 songImg.setImageResource(R.drawable.img_song_6)
                 imgSong.setImageResource(R.drawable.img_song_6)
                 pageIndex = 6
             }
-            "7" -> {
+            "8" -> {
                 tvTitleBottom.setText(R.string.text_dars7)
                 songImg.setImageResource(R.drawable.img_song_7)
                 imgSong.setImageResource(R.drawable.img_song_7)
                 pageIndex = 7
             }
-            "8" -> {
+            "9" -> {
                 tvTitleBottom.setText(R.string.text_dars8)
                 songImg.setImageResource(R.drawable.img_song_8)
                 imgSong.setImageResource(R.drawable.img_song_8)

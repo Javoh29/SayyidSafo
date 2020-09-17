@@ -14,7 +14,7 @@ interface AudiosDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun upsertAudios(audioModel: AudioModel)
 
-    @Query("select * from audios_table where topic_id == :topicId")
+    @Query("select * from audios_table where topic_id == :topicId ORDER BY rn ASC")
     fun getAudios(topicId: Int): LiveData<List<UnitAudioModel>>
 
     @Query("select * from audios_table where name == :name")
