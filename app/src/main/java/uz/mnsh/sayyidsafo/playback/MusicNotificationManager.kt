@@ -137,14 +137,14 @@ class MusicNotificationManager internal constructor(private val mMusicService: M
     private fun getImage(id: String): Bitmap{
         var b: Bitmap? = null
         when(id){
-            "1" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_1)
-            "2" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_2)
-            "3" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_3)
-            "4" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_4)
-            "5" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_5)
-            "6" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_6)
-            "7" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_7)
-            "8" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_8)
+            "2" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_1)
+            "3" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_2)
+            "4" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_3)
+            "5" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_4)
+            "6" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_5)
+            "7" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_6)
+            "8" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_7)
+            "9" -> b = BitmapFactory.decodeResource(context.resources, R.drawable.img_song_8)
         }
         return b!!
     }
